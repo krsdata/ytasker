@@ -231,13 +231,13 @@ class ApiController extends Controller
          
         $user = JWTAuth::toUser($token); 
 
-        $data['user_id']        = $user->id; 
+        $data['id']             = $user->id; 
         $input['first_name']    = $request->input('first_name');
         $input['last_name']     = $request->input('last_name'); 
         $input['email']         = $request->input('email'); 
         $input['password']      = Hash::make($request->input('password'));
         $input['role_type']     = ($request->input('role_type'))?$request->input('role_type'):'';
-        $data['token']          = $token;
+        $data['token']          = $input;
 
         return response()->json([ "status"=>1,"code"=>200,"message"=>"Successfully logged in." ,'data' => $data ]);
 
