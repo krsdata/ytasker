@@ -150,6 +150,7 @@ class ApiController extends Controller
         return response()->json(
                             [ 
                                 "status"=>1,
+                                "code" => 200,
                                 "message"=>"Thank you for registration. Please verify your email.",
                                 'data'=>$request->except('password')
                             ]
