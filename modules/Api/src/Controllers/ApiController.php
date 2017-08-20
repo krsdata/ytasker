@@ -235,7 +235,7 @@ class ApiController extends Controller
         $input['first_name']    = $request->input('first_name');
         $input['last_name']     = $request->input('last_name'); 
         $input['email']         = $request->input('email'); 
-        $input['password']      = Hash::make($request->input('password'));
+       // $input['password']      = Hash::make($request->input('password'));
         $input['role_type']     = ($request->input('role_type'))?$request->input('role_type'):'';
         $data['token']          = $input;
 
