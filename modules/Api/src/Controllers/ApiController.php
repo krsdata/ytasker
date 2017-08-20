@@ -232,11 +232,10 @@ class ApiController extends Controller
         $user = JWTAuth::toUser($token); 
 
         $data['id']             = $user->id; 
-        $input['first_name']    = $request->input('first_name');
-        $input['last_name']     = $request->input('last_name'); 
-        $input['email']         = $request->input('email'); 
-       // $input['password']      = Hash::make($request->input('password'));
-        $input['role_type']     = ($request->input('role_type'))?$request->input('role_type'):'';
+        $data['first_name']    = $request->input('first_name');
+        $data['last_name']     = $request->input('last_name'); 
+        $data['email']         = $request->input('email'); 
+        $data['role_type']     = ($request->input('role_type'))?$request->input('role_type'):'';
         $data['token']          = $input;
 
         return response()->json([ "status"=>1,"code"=>200,"message"=>"Successfully logged in." ,'data' => $data ]);
