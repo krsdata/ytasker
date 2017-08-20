@@ -236,7 +236,7 @@ class ApiController extends Controller
         $data['last_name']     = $request->input('last_name'); 
         $data['email']         = $request->input('email'); 
         $data['role_type']     = ($request->input('role_type'))?$request->input('role_type'):'';
-        $data['token']          = $input;
+        $data['token']          = $token;
 
         return response()->json([ "status"=>1,"code"=>200,"message"=>"Successfully logged in." ,'data' => $data ]);
 
