@@ -146,7 +146,7 @@ class ApiController extends Controller
                 'first_name'=> $request->get('first_name')
                 ];
 
-        $verification_email = $helper->sendMailFrontEnd($email_content,'verification_link');
+      //  $verification_email = $helper->sendMailFrontEnd($email_content,'verification_link');
        
         return response()->json(
                             [ 
