@@ -103,11 +103,11 @@ class ApiController extends Controller
     public function register(Request $request,User $user)
     {   
 
-        $input['first_name']    = $request->input('first_name');
-        $input['last_name']     = $request->input('last_name'); 
-        $input['email']         = $request->input('email'); 
-        $input['password']      = Hash::make($request->input('password'));
-        $input['role_type']      = ($request->input('role_type'))?$request->input('role_type'):'';
+        $user->first_name    = $request->get('first_name');
+        $user->last_name     = $request->get('last_name'); 
+        $user->email        = $request->get('email'); 
+        $user->password      = Hash::make($request->input('password'));
+        $user->role_type      = ($request->input('role_type'))?$request->input('role_type'):'';
          
         if($request->input('user_id')){
             $u = $this->updateProfile($request,$user);
@@ -136,13 +136,14 @@ class ApiController extends Controller
         
         $helper = new Helper;
         /** --Create USER-- **/
-        $user = User::create($input); 
+        
+        $user->save();
         $subject = "Welcome to yellotasker! Verify your email address to get started";
         $email_content = [
-                'receipent_email'=> $request->input('email'),
+                'receipent_email'=> $request->get('email'),
                 'subject'=>$subject,
                 'greeting'=> 'Yellotasker',
-                'first_name'=> $request->input('first_name')
+                'first_name'=> $request->get('first_name')
                 ];
 
         $verification_email = $helper->sendMailFrontEnd($email_content,'verification_link');
