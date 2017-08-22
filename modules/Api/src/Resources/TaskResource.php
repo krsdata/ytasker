@@ -42,8 +42,8 @@ class TaskResource extends BaseApiResource {
         
         if (!empty($post_request)) 
         {
-            if ($request->get('User_ID')) {
-                $user_id = $request->get('User_ID');
+            if ($request->get('user_id')) {
+                $user_id = $request->get('user_id');
                 $user_data = User::find($user_id);
                 if (empty($user_data)) {
                     return
@@ -55,19 +55,20 @@ class TaskResource extends BaseApiResource {
                         ];
                     
                 } else {
-                    if($request->get('Task_Title') && $request->get('Task_Description') && $request->get('Due_Date') && $request->get('User_ID')  && $request->get('People_required') && $request->get('Budget') && $request->get('Budget_Type') ){
+                    if($request->get('title') && $request->get('description') && $request->get('due_date') && $request->get('user_id')  && $request->get('people_required') && $request->get('budget') && $request->get('budget_type') ){
 
                         $task = new Tasks;
 
-                        $date = $request->get('Due_Date');
-                        $task->title = $request->get('Task_Title');
-                        $task->description = $request->get('Task_Description');
+                        $date = $request->get('due_date');
+                        $task->title = $request->get('title');
+                        $task->description = $request->get('description');
                         $due_date = Carbon::createFromFormat('m/d/Y', $date);
-                        $task->user_id = $request->get('User_ID');
+                        $task->user_id = $request->get('user_id');
                         $task->due_date = $due_date;
-                        $task->people_required = $request->get('People_required');
-                        $task->budget = $request->get('Budget');
-                        $task->budget_type = $request->get('Budget_Type');
+                        $task->people_required = $request->get('people_required');
+                        $task->budget = $request->get('budget');
+                        $task->budget_type = $request->get('budget_type');
+                        $task->status = '0';
 
                         $task->save();
 

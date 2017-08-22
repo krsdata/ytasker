@@ -106,6 +106,7 @@ class ApiController extends Controller
         $input['first_name']    = $request->input('first_name');
         $input['last_name']     = $request->input('last_name'); 
         $input['email']         = $request->input('email'); 
+        $input['phone']         = $request->input('phone'); 
         $input['password']      = Hash::make($request->input('password'));
         $input['role_type']      = ($request->input('role_type'))?$request->input('role_type'):'';
          
@@ -117,7 +118,8 @@ class ApiController extends Controller
         //Server side valiation
         $validator = Validator::make($request->all(), [
            'email' => 'required|email|unique:users',
-            'password' => 'required'
+            'password' => 'required',
+            'phone' => 'numeric|unique:users'
         ]);
         /** Return Error Message **/
         if ($validator->fails()) {
