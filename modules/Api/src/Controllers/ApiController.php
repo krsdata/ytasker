@@ -103,12 +103,12 @@ class ApiController extends Controller
     public function register(Request $request,User $user)
     {   
 
-        $input['first_name']    = $request->input('first_name');
-        $input['last_name']     = $request->input('last_name'); 
-        $input['email']         = $request->input('email'); 
-        $input['phone']         = $request->input('phone'); 
-        $input['password']      = Hash::make($request->input('password'));
-        $input['role_type']      = ($request->input('role_type'))?$request->input('role_type'):'';
+        $user->first_name    = $request->get('first_name');
+        $user->last_name     = $request->get('last_name'); 
+        $user->email        = $request->get('email'); 
+        $user->phone        = $request->get('phone'); 
+        $user->password      = Hash::make($request->input('password'));
+        $user->role_type      = ($request->input('role_type'))?$request->input('role_type'):'';
          
         if($request->input('user_id')){
             $u = $this->updateProfile($request,$user);
@@ -119,7 +119,7 @@ class ApiController extends Controller
         $validator = Validator::make($request->all(), [
            'email' => 'required|email|unique:users',
             'password' => 'required',
-            'phone' => 'numeric|unique:users'
+            'phone' => 'unique:users'
         ]);
         /** Return Error Message **/
         if ($validator->fails()) {
@@ -138,20 +138,22 @@ class ApiController extends Controller
         
         $helper = new Helper;
         /** --Create USER-- **/
-        $user = User::create($input); 
+        
+        $user->save();
         $subject = "Welcome to yellotasker! Verify your email address to get started";
         $email_content = [
-                'receipent_email'=> $request->input('email'),
+                'receipent_email'=> $request->get('email'),
                 'subject'=>$subject,
                 'greeting'=> 'Yellotasker',
-                'first_name'=> $request->input('first_name')
+                'first_name'=> $request->get('first_name')
                 ];
 
-        $verification_email = $helper->sendMailFrontEnd($email_content,'verification_link');
+      //  $verification_email = $helper->sendMailFrontEnd($email_content,'verification_link');
        
         return response()->json(
                             [ 
                                 "status"=>1,
+                                "code" => 200,
                                 "message"=>"Thank you for registration. Please verify your email.",
                                 'data'=>$request->except('password')
                             ]
@@ -233,12 +235,11 @@ class ApiController extends Controller
          
         $user = JWTAuth::toUser($token); 
 
-        $data['user_id']        = $user->id; 
-        $input['first_name']    = $request->input('first_name');
-        $input['last_name']     = $request->input('last_name'); 
-        $input['email']         = $request->input('email'); 
-        $input['password']      = Hash::make($request->input('password'));
-        $input['role_type']     = ($request->input('role_type'))?$request->input('role_type'):'';
+        $data['id']             = $user->id; 
+        $data['first_name']    = $request->input('first_name');
+        $data['last_name']     = $request->input('last_name'); 
+        $data['email']         = $request->input('email'); 
+        $data['role_type']     = ($request->input('role_type'))?$request->input('role_type'):'';
         $data['token']          = $token;
 
         return response()->json([ "status"=>1,"code"=>200,"message"=>"Successfully logged in." ,'data' => $data ]);
