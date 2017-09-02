@@ -111,24 +111,44 @@
                 ]
                     ]
             );
-        /*---------End---------*/    
+        /*---------Contact Route ---------*/    
 
-        Route::bind('product', function($value, $route) {
-            return Modules\Admin\Models\Product::find($value);
+        Route::bind('contact', function($value, $route) {
+            return Modules\Admin\Models\Contact::find($value);
         });
  
-        Route::resource('admin/product', 'Modules\Admin\Http\Controllers\ProductController', [
+        Route::resource('admin/contact', 'Modules\Admin\Http\Controllers\ContactController', [
             'names' => [
-                'edit' => 'product.edit',
-                'show' => 'product.show',
-                'destroy' => 'product.destroy',
-                'update' => 'product.update',
-                'store' => 'product.store',
-                'index' => 'product',
-                'create' => 'product.create',
+                'edit' => 'contact.edit',
+                'show' => 'contact.show',
+                'destroy' => 'contact.destroy',
+                'update' => 'contact.update',
+                'store' => 'contact.store',
+                'index' => 'contact',
+                'create' => 'contact.create',
             ]
                 ]
         ); 
+
+         /*---------Contact Route ---------*/    
+
+        Route::bind('contactGroup', function($value, $route) {
+            return Modules\Admin\Models\ContactGroup::find($value);
+        });
+ 
+        Route::resource('admin/contactGroup', 'Modules\Admin\Http\Controllers\ContactGroupController', [
+            'names' => [
+                'edit' => 'contactGroup.edit',
+                'show' => 'contactGroup.show',
+                'destroy' => 'contactGroup.destroy',
+                'update' => 'contactGroup.update',
+                'store' => 'contactGroup.store',
+                'index' => 'contactGroup',
+                'create' => 'contactGroup.create',
+            ]
+                ]
+        );
+
 
         Route::bind('transaction', function($value, $route) {
             return Modules\Admin\Models\Transaction::find($value);
