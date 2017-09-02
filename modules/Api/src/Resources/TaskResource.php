@@ -42,9 +42,9 @@ class TaskResource extends BaseApiResource {
         
         if (!empty($post_request)) 
         {
-            if ($request->get('user_id')) {
-                $user_id = $request->get('user_id');
-                $user_data = User::find($user_id);
+            if ($request->get('poster_id')) {
+                $poster_id = $request->get('poster_id');
+                $user_data = User::find($poster_id);
                 if (empty($user_data)) {
                     return
                         [ 
@@ -55,7 +55,7 @@ class TaskResource extends BaseApiResource {
                         ];
                     
                 } else {
-                    if($request->get('title') && $request->get('description') && $request->get('due_date') && $request->get('user_id')  && $request->get('people_required') && $request->get('budget') && $request->get('budget_type') ){
+                    if($request->get('title') && $request->get('description') && $request->get('due_date') && $request->get('poster_id')  && $request->get('people_required') && $request->get('budget') && $request->get('budget_type') ){
 
                         $task = new Tasks;
 
@@ -63,12 +63,18 @@ class TaskResource extends BaseApiResource {
                         $task->title = $request->get('title');
                         $task->description = $request->get('description');
                         $due_date = Carbon::createFromFormat('m/d/Y', $date);
-                        $task->user_id = $request->get('user_id');
+                        $task->poster_id = $request->get('poster_id');
                         $task->due_date = $due_date;
                         $task->people_required = $request->get('people_required');
                         $task->budget = $request->get('budget');
                         $task->budget_type = $request->get('budget_type');
                         $task->status = '0';
+
+                        isset($request->get('location')) ?$task->location = $request->get('location') : $task->location = NULL;
+                        isset($request->get('country')) ?$task->country = $request->get('country') : $task->country = NULL;
+                        isset($request->get('city')) ?$task->city = $request->get('city') : $task->city = NULL;
+                        isset($request->get('address')) ?$task->address = $request->get('address') : $task->address = NULL;
+                        isset($request->get('zipcode')) ?$task->zipcode = $request->get('zipcode') : $task->zipcode = NULL;
 
                         $task->save();
 
