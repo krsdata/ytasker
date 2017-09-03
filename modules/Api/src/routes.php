@@ -53,7 +53,13 @@ Route::group(['prefix' => 'api/v1'], function()
                 'as' => 'post_task_create',
                 'uses' => 'TaskController@create'
                 ]
-            );      
+            );     
+
+            Route::match(['get'],'getOpenTasks/{page}',[
+                'as' => 'get_open_tasks',
+                'uses' => 'TaskController@getOpenTasks'
+                ]
+            ); 
 
             Route::match(['get'],'get-user-tasks/{user_id}',[
                 'as' => 'get_user_tasks',

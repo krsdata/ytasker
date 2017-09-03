@@ -42,20 +42,20 @@ class TaskResource extends BaseApiResource {
         
         if (!empty($post_request)) 
         {
-            if ($request->get('poster_id')) {
-                $poster_id = $request->get('poster_id');
-                $user_data = User::find($poster_id);
+            if ($request->get('client_id')) {
+                $client_id = $request->get('client_id');
+                $user_data = User::find($client_id);
                 if (empty($user_data)) {
                     return
                         [ 
                         "status"  => '0',
                         'code'    => '200',
-                        "message" => 'No match found for the given user id.',
+                        "message" => 'No match found for the given client id.',
                         'data'    => []
                         ];
                     
                 } else {
-                    if($request->get('title') && $request->get('description') && $request->get('due_date') && $request->get('poster_id')  && $request->get('people_required') && $request->get('budget') && $request->get('budget_type') ){
+                    if($request->get('title') && $request->get('description') && $request->get('due_date') && $request->get('client_id')  && $request->get('people_required') && $request->get('budget') && $request->get('budget_type') ){
 
                         $task = new Tasks;
 
@@ -63,18 +63,18 @@ class TaskResource extends BaseApiResource {
                         $task->title = $request->get('title');
                         $task->description = $request->get('description');
                         $due_date = Carbon::createFromFormat('m/d/Y', $date);
-                        $task->poster_id = $request->get('poster_id');
+                        $task->client_id = $request->get('client_id');
                         $task->due_date = $due_date;
                         $task->people_required = $request->get('people_required');
                         $task->budget = $request->get('budget');
                         $task->budget_type = $request->get('budget_type');
                         $task->status = '0';
 
-                        isset($request->get('location')) ?$task->location = $request->get('location') : $task->location = NULL;
-                        isset($request->get('country')) ?$task->country = $request->get('country') : $task->country = NULL;
-                        isset($request->get('city')) ?$task->city = $request->get('city') : $task->city = NULL;
-                        isset($request->get('address')) ?$task->address = $request->get('address') : $task->address = NULL;
-                        isset($request->get('zipcode')) ?$task->zipcode = $request->get('zipcode') : $task->zipcode = NULL;
+                        $task->location = !empty($request->get('location')) ?$task->location = $request->get('location') : $task->location = NULL;
+                        !empty($request->get('country')) ? $task->country = $request->get('country') : $task->country = NULL;
+                        !empty($request->get('city')) ?  $task->city = $request->get('city') : $task->city = NULL;
+                        !empty($request->get('address')) ?$task->address = $request->get('address') : $task->address = NULL;
+                        !empty($request->get('zipcode')) ?$task->zipcode = $request->get('zipcode') : $task->zipcode = NULL;
 
                         $task->save();
 
@@ -94,7 +94,7 @@ class TaskResource extends BaseApiResource {
             } else {
                  $status  = 0;
                 $code    = 400;
-                $message = 'Unable to add task, user id field is empty.';
+                $message = 'Unable to add task, client id field is empty.';
                 $data    = [];
             }  
         } else {
@@ -137,8 +137,13 @@ class TaskResource extends BaseApiResource {
                     ];
     }
 
-    public function getOpenTasks(){
-        $tasks = Tasks::where('status', 0)->get();
+    public function getOpenTasks($request){
+
+        dd($request->route('page'));
+        $tasks = Tasks::where('status', 0)
+                        ->offset(0)
+                        ->limit(25)
+                        ->get();
 
         if(count($tasks)){
             $status  =  1;
