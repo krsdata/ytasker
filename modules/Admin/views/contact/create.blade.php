@@ -28,14 +28,13 @@
                                 <div class="portlet-title">
                                     <div class="caption">
                                         <i class="icon-settings font-red"></i>
-                                        <span class="caption-subject font-red sbold uppercase">Create Group Category</span>
-                                    </div>
-                                    
+                                        <span class="caption-subject font-red sbold uppercase">Create  {{$heading}}</span>
+                                    </div> 
                                 </div>
                                 <div class="portlet-body">
                                     <!-- BEGIN FORM-->
                                 
-                                  {!! Form::model($category, ['route' => ['category.store'],'class'=>'form-horizontal user-form','id'=>'user-form','enctype'=>'multipart/form-data']) !!}
+                                  {!! Form::model($category, ['route' => ['contact.store'],'class'=>'form-horizontal user-form','id'=>'user-form','enctype'=>'multipart/form-data']) !!}
                                   
                                   @include('packages::contact.form')
                                   

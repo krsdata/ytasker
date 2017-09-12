@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Redirect;
 use App\Http\Requests;
 use Illuminate\Http\Request;
-use Modules\Admin\Http\Requests\CategoryRequest;
+use Modules\Admin\Http\Requests\ContactRequest;
 use Modules\Admin\Models\User; 
 use Input;
 use Validator;
@@ -18,16 +18,15 @@ use Hash;
 use View;
 use URL;
 use Lang;
-use Session;
-use DB;
+use Session; 
 use Route;
-use Crypt;
+use Crypt; 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Dispatcher; 
 use App\Helpers\Helper;
-use Modules\Admin\Models\Roles; 
+use Modules\Admin\Models\Contact; 
 use Modules\Admin\Models\Category;
- 
+use Response; 
 
 /**
  * Class AdminController
@@ -42,15 +41,14 @@ class ContactController extends Controller {
      *
      * @return \Illuminate\View\View
      */
-    public function __construct() { 
+    public function __construct(Contact $contact) { 
         $this->middleware('admin');
         View::share('viewPage', 'Contact');
         View::share('sub_page_title', 'Contact');
         View::share('helper',new Helper);
         View::share('heading','Contact');
-        View::share('route_url',route('Contact'));
-
-        $this->record_per_page = Config::get('app.record_per_page');
+        View::share('route_url',route('contact')); 
+        $this->record_per_page = Config::get('app.record_per_page'); 
     }
 
    
@@ -60,14 +58,14 @@ class ContactController extends Controller {
 
     public function index(Category $category, Request $request) 
     { 
-        $page_title = 'Category';
-        $sub_page_title = 'Group Category';
-        $page_action = 'View Group Category'; 
+        $page_title = 'Contact';
+        $sub_page_title = 'View Contact';
+        $page_action = 'View Contact'; 
 
 
         if ($request->ajax()) {
             $id = $request->get('id'); 
-            $category = Category::find($id); 
+            $category = Contact::find($id); 
             $category->status = $s;
             $category->save();
             echo $s;
@@ -81,19 +79,20 @@ class ContactController extends Controller {
 
             $search = isset($search) ? Input::get('search') : '';
                
-            $categories = Category::where(function($query) use($search,$status) {
+            $contacts = Contact::where(function($query) use($search,$status) {
                         if (!empty($search)) {
-                            $query->Where('category_group_name', 'LIKE', "%$search%")
-                                    ->OrWhere('category_name', 'LIKE', "%$search%");
+                            $query->Where('name', 'LIKE', "%$search%")
+                                    ->OrWhere('email', 'LIKE', "%$search%")
+                                      ->OrWhere('phone', 'LIKE', "%$search%");
                         }
                         
-                    })->where('parent_id',0)->Paginate($this->record_per_page);
+                    })>Paginate($this->record_per_page);
         } else {
-            $categories = Category::where('parent_id',0)->Paginate($this->record_per_page);
+            $contacts = Contact::Paginate($this->record_per_page);
         }
          
         
-        return view('packages::contact.index', compact('result_set','categories','data', 'page_title', 'page_action','sub_page_title'));
+        return view('packages::contact.index', compact('result_set','contacts','data', 'page_title', 'page_action','sub_page_title'));
     }
 
     /*
@@ -102,7 +101,7 @@ class ContactController extends Controller {
 
     public function create(Category $category) 
     {
-         
+        
         $page_title = 'Contact';
         $page_action = 'Create Contact';
         $category  = Category::all();
@@ -114,36 +113,27 @@ class ContactController extends Controller {
         return view('packages::contact.create', compact('categories', 'html','category','sub_category_name', 'page_title', 'page_action'));
     }
 
+    public function createGroup(Request $request)
+    {
+        $contact = Contact::whereIn('id',$request->get('ids'))->get();
+        return $contact;
+    }
+
     /*
      * Save Group method
      * */
 
-    public function store(CategoryRequest $request, Category $category) 
-    {  
-        $name = $request->get('category_group_name');
-        $slug = str_slug($request->get('category_group_name'));
-        $parent_id = 0;
-
-        $photo = $request->file('category_group_image');
-        $destinationPath = storage_path('uploads/category');
-        $photo->move($destinationPath, time().$photo->getClientOriginalName());
-        $photo_name = time().$photo->getClientOriginalName();
-        $request->merge(['photo'=>$photo_name]);
- 
-
-        $cat = new Category;
-        $cat->category_group_name   =  $request->get('category_group_name');
-        $cat->slug                  =  strtolower(str_slug($request->get('category_group_name')));
-        $cat->parent_id             =  $parent_id;
-        $cat->category_name         =  $request->get('category_group_name'); 
-        $cat->level                 =  1;
-        $cat->category_group_image  =  $photo_name; 
-        $cat->description           =  $request->get('description');
+    public function store(ContactRequest $request, Contact $contact) 
+    {   
+        $contact->name     =   $request->get('name');
+        $contact->phone    =   $request->get('phone');
+        $contact->email    =   $request->get('email');
+        $contact->address  =   $request->get('address'); 
         
-        $cat->save();   
+        $contact->save();   
          
         return Redirect::to(route('contact'))
-                            ->with('flash_alert_notice', 'New category  successfully created !');
+                            ->with('flash_alert_notice', 'New contact  successfully created!');
         }
 
     /*
@@ -152,73 +142,38 @@ class ContactController extends Controller {
      * object : $category
      * */
 
-    public function edit(Category $category) {
-
-        $page_title = 'Category';
-        $page_action = 'Edit Group category'; 
-        $url = url::asset('storage/uploads/category/'.$category->category_group_image)  ;
-        return view('packages::category.edit', compact( 'url','category', 'page_title', 'page_action'));
+    public function edit($id) {
+        $contact = Contact::find($id);
+        $page_title = 'contact';
+        $page_action = 'Edit contact'; 
+        return view('packages::contact.edit', compact( 'url','contact', 'page_title', 'page_action'));
     }
 
-    public function update(CategoryRequest $request, Category $category) {
-       
-        $name = $request->get('category_group_name');
-        $slug = str_slug($request->get('category_group_name'));
-        $parent_id = 0;
-
-        $validate_cat = Category::where('category_group_name',$request->get('category_group_name'))
-                            ->where('parent_id',0)
-                            ->where('id','!=',$category->id)
-                            ->first();
-         
-        if($validate_cat){
-              return  Redirect::back()->withInput()->with(
-                'field_errors','The Group Category name already been taken!'
-            );
-        } 
-
-
-        if ($request->file('category_group_image')) {
-            $photo = $request->file('category_group_image');
-            $destinationPath = storage_path('uploads/category');
-            $photo->move($destinationPath, time().$photo->getClientOriginalName());
-            $photo_name = time().$photo->getClientOriginalName();
-            $request->merge(['photo'=>$photo_name]);
-        } 
-
-        $cat                        = Category::find($category->id);
-        $cat->category_group_name   =  $request->get('category_group_name');
-        $cat->slug                  =  strtolower(str_slug($request->get('category_group_name')));
-        $cat->parent_id             =  $parent_id;
-        $cat->category_name         =  $request->get('category_group_name'); 
-        $cat->level                 =  1;
-        $cat->description           =  $request->get('description');
-
-        if(isset($photo_name))
-        {
-          $cat->category_group_image  =  $photo_name; 
+    public function update(Request $request, $id) {
+        $request = $request->except('_method','_token');
+        $contact = Contact::find($id); 
+        foreach ($request as $key => $value) {
+            $contact->$key = $value;
         }
-         
-        $cat->save();    
-
-
+        $contact->save();
         return Redirect::to(route('contact'))
-                        ->with('flash_alert_notice', 'Group Category  successfully updated.');
+                        ->with('flash_alert_notice', 'Contact  successfully updated.');
     }
     /*
      *Delete User
      * @param ID
      * 
      */
-    public function destroy(Category $category) {
-        
-        $d = Category::where('id',$category->id)->delete(); 
-        return Redirect::to(route('category'))
-                        ->with('flash_alert_notice', 'Group Category  successfully deleted.');
+    public function destroy($id) { 
+        Contact::where('id',$id)->delete(); 
+        return Redirect::to(route('contact'))
+                        ->with('flash_alert_notice', 'contact  successfully deleted.');
     }
 
-    public function show(Category $category) {
+    public function show($id) {
         
-    }
+        return Redirect::to('admin/contact');
+
+            }
 
 }

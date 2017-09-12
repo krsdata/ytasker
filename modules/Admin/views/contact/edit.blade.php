@@ -28,7 +28,7 @@
                                 <div class="portlet-title">
                                     <div class="caption">
                                         <i class="icon-settings font-red"></i>
-                                        <span class="caption-subject font-dark sbold uppercase">Edit Category</span>
+                                        <span class="caption-subject font-dark sbold uppercase">Edit Contact</span>
                                     </div>
                                     
                                 </div>
@@ -36,8 +36,8 @@
                                     <!-- BEGIN FORM--> 
 
 
-                                {!! Form::model($category, ['method' => 'PATCH', 'route' => ['category.update', $category->id],'class'=>'form-horizontal user-form','id'=>'form_sample_3','enctype'=>'multipart/form-data']) !!}
-                                    @include('packages::category.form', compact('category'))
+                                {!! Form::model($contact, ['method' => 'PATCH', 'route' => ['contact.update', $contact->id],'class'=>'form-horizontal user-form','id'=>'form_sample_3','enctype'=>'multipart/form-data']) !!}
+                                    @include('packages::contact.form', compact('contact'))
                                 {!! Form::close() !!} 
                                     <!-- END FORM-->
                                 </div>

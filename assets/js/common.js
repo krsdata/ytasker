@@ -403,3 +403,68 @@ $(function(){
         }
     });
 });
+
+function checkAll(ele) {
+     var checkboxes = document.getElementsByTagName('input');
+     if (ele.checked) {
+         for (var i = 0; i < checkboxes.length; i++) {
+             if (checkboxes[i].type == 'checkbox') {
+                 checkboxes[i].checked = true;
+             }
+         }
+     } else {
+         for (var i = 0; i < checkboxes.length; i++) {
+             console.log(i)
+             if (checkboxes[i].type == 'checkbox') {
+                 checkboxes[i].checked = false;
+             }
+         }
+     }
+ }
+
+ function deleteRow(tableID) {
+     try {
+         var table = document.getElementById(tableID);
+         var rowCount = table.rows.length;
+
+         for (var i = 1; i < rowCount; i++) {
+             var row = table.rows[i];
+             var chkbox = row.cells[0].childNodes[0];
+             if (null != chkbox && true == chkbox.checked) {
+                 table.deleteRow(i);
+                 rowCount--;
+                 i--;
+             }
+         }
+     } catch (e) {
+         alert(e);
+     }
+ }
+
+
+
+function createGroup(url) {
+     try {
+        var checkValues = $('input[name=checkAll]:checked').map(function()
+            {
+                return $(this).val();
+            }).get();
+console.log(checkValues);
+
+            $.ajax({
+                url: url,
+                type: 'get',
+                data: { ids: checkValues },
+                 dataType: "json",
+                success:function(data){
+                    console.log(data);
+                }
+            });
+
+
+
+
+     } catch (e) {
+         alert(e);
+     }
+ }

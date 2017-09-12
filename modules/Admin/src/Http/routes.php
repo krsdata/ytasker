@@ -128,7 +128,31 @@
                 'create' => 'contact.create',
             ]
                 ]
-        ); 
+        );  
+
+         Route::get('admin/createGroup', 'Modules\Admin\Http\Controllers\ContactController@createGroup');  
+
+
+
+         Route::bind('contacts', function($value, $route) {
+            return Modules\Admin\Models\Contact::find($value);
+        });
+
+        Route::resource('admin/contacts', 'Modules\Admin\Http\Controllers\ContactController', [
+            'names' => [
+                'edit' => 'contacts.edit',
+                'show' => 'contacts.show',
+                'destroy' => 'contacts.destroy',
+                'update' => 'contacts.update',
+                'store' => 'contacts.store',
+                'index' => 'contacts',
+                'create' => 'contacts.create',
+            ]
+                ]
+        );  
+
+
+
 
          /*---------Contact Route ---------*/    
 
